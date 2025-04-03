@@ -1,0 +1,21 @@
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  setup:
+    cmds:
+      - uv sync --dev --frozen
+  lint:
+    cmds:
+      - uv run ruff check
+  lint-fix:
+    cmds:
+      - uv run ruff check --fix
+  format:
+    cmds:
+      - uv run ruff format
+  mypy:
+    cmds:
+      - uv run mypy main.py
+      - uv run mypy src
