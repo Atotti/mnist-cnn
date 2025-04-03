@@ -1,0 +1,108 @@
+import argparse
+
+import torch
+import torch.nn.functional as func
+from torch import nn, optim
+from torch.optim.lr_scheduler import StepLR
+from torch.utils.data import DataLoader
+
+
+def train(
+    args: argparse.Namespace,
+    model: nn.Module,
+    device: torch.device,
+    train_loader: DataLoader,
+    optimizer: torch.optim.Optimizer,
+    epoch: int,
+) -> None:
+    """Train the model for one epoch.
+
+    Args:
+        args: Command line arguments
+        model: Neural network model to train
+        device: Device to train on (cuda, mps, or cpu)
+        train_loader: DataLoader for training data
+        optimizer: Optimizer for updating model weights
+        epoch: Current epoch number
+    """
+    model.train()
+    for batch_idx, (data, target) in enumerate(train_loader):
+        device_data, device_target = data.to(device), target.to(device)
+        optimizer.zero_grad()
+        output = model(device_data)
+        loss = func.nll_loss(output, device_target)
+        loss.backward()
+        optimizer.step()
+        if batch_idx % args.log_interval == 0:
+            print(
+                f"Train Epoch: {epoch} [{batch_idx * len(device_data)}/{len(train_loader.dataset)} "
+                f"({100.0 * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}"
+            )
+            if args.dry_run:
+                break
+
+
+def test(model: nn.Module, device: torch.device, test_loader: DataLoader) -> float:
+    """Evaluate the model on test data.
+
+    Args:
+        model: Neural network model to evaluate
+        device: Device to evaluate on (cuda, mps, or cpu)
+        test_loader: DataLoader for test data
+
+    Returns:
+        Test accuracy as a percentage
+    """
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            device_data, device_target = data.to(device), target.to(device)
+            output = model(device_data)
+            test_loss += func.nll_loss(output, device_target, reduction="sum").item()  # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            correct += pred.eq(device_target.view_as(pred)).sum().item()
+
+    test_loss /= len(test_loader.dataset)
+    accuracy = 100.0 * correct / len(test_loader.dataset)
+
+    print(
+        f"\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} ({accuracy:.1f}%)\n"
+    )
+
+    return accuracy
+
+
+def train_model(
+    model: nn.Module,
+    device: torch.device,
+    train_loader: DataLoader,
+    test_loader: DataLoader,
+    args: argparse.Namespace,
+) -> nn.Module:
+    """Train the model for multiple epochs.
+
+    Args:
+        model: Neural network model to train
+        device: Device to train on (cuda, mps, or cpu)
+        train_loader: DataLoader for training data
+        test_loader: DataLoader for test data
+        args: Command line arguments
+
+    Returns:
+        Trained model
+    """
+    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
+    scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+
+    for epoch in range(1, args.epochs + 1):
+        train(args, model, device, train_loader, optimizer, epoch)
+        test(model, device, test_loader)
+        scheduler.step()
+
+    if args.save_model:
+        torch.save(model.state_dict(), "mnist_cnn.pt")
+        print("Saved model to mnist_cnn.pt")
+
+    return model
