@@ -59,10 +59,29 @@ def plot_losses(
         plt.savefig(save_path)
         print(f"Plot saved to {save_path}")
 
-    if show_plot:
-        try:
-            plt.show()
-        except Exception as e:
-            print(f"Note: Could not display plot interactively ({e!s})")
+    plt.close()
+
+def plot_accurency(
+    eval_accurency: list[float],
+    save_path: str | None = None,
+    show_plot: bool = True,
+):
+    plt.figure(figsize=(10, 6))
+    epochs = range(1, len(eval_accurency) + 1)
+
+    plt.plot(epochs, eval_accurency, "r-", label="Evaluation Loss")
+
+    plt.title("Training and Evaluation Losses")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.7)
+
+
+    plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path)
+        print(f"Plot saved to {save_path}")
 
     plt.close()

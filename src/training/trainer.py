@@ -93,7 +93,7 @@ def train_model(
     train_loader: DataLoader,
     test_loader: DataLoader,
     args: argparse.Namespace,
-) -> tuple[nn.Module, list[float], list[float]]:
+) -> tuple[nn.Module, list[float], list[float], list[float]]:
     """Train the model for multiple epochs.
 
     Args:
@@ -104,13 +104,14 @@ def train_model(
         args: Command line arguments
 
     Returns:
-        Tuple containing (trained model, training losses, evaluation losses)
+        Tuple containing (trained model, training losses, evaluation losses, eval accurency)
     """
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
 
     train_losses = []
     eval_losses = []
+    eval_accurencyes = []
 
     for epoch in range(1, args.epochs + 1):
         # Train and get average loss for the epoch
@@ -120,6 +121,7 @@ def train_model(
         # Test and get test loss and accuracy
         eval_loss, accuracy = test(model, device, test_loader)
         eval_losses.append(eval_loss)
+        eval_accurencyes.append(accuracy)
 
         scheduler.step()
 
@@ -127,4 +129,4 @@ def train_model(
         torch.save(model.state_dict(), "mnist_cnn.pt")
         print("Saved model to mnist_cnn.pt")
 
-    return model, train_losses, eval_losses
+    return model, train_losses, eval_losses, eval_accurencyes

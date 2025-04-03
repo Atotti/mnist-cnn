@@ -5,7 +5,7 @@ import torch
 from src.data import get_data_loaders
 from src.models import Net
 from src.training.trainer import train_model
-from src.visualization import plot_losses
+from src.visualization import plot_accurency, plot_losses
 
 
 def main() -> None:
@@ -18,7 +18,7 @@ def main() -> None:
     parser.add_argument(
         "--test-batch-size", type=int, default=1000, metavar="N", help="input batch size for testing (default: 1000)"
     )
-    parser.add_argument("--epochs", type=int, default=14, metavar="N", help="number of epochs to train (default: 14)")
+    parser.add_argument("--epochs", type=int, default=10, metavar="N", help="number of epochs to train (default: 14)")
     parser.add_argument("--lr", type=float, default=1.0, metavar="LR", help="learning rate (default: 1.0)")
     parser.add_argument("--gamma", type=float, default=0.7, metavar="M", help="Learning rate step gamma (default: 0.7)")
     parser.add_argument("--no-cuda", action="store_true", default=False, help="disables CUDA training")
@@ -69,12 +69,13 @@ def main() -> None:
     model = Net().to(device)
 
     # Train and evaluate model
-    model, train_losses, eval_losses = train_model(model, device, train_loader, test_loader, args)
+    model, train_losses, eval_losses, eval_accurency = train_model(model, device, train_loader, test_loader, args)
 
     # Plot losses if requested
     if args.plot_losses:
         save_path = args.plot_path if args.save_plot else None
         plot_losses(train_losses, eval_losses, save_path=save_path)
+        plot_accurency(eval_accurency, save_path=save_path.replace(".", "_acurrency."))
 
 
 if __name__ == "__main__":
