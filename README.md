@@ -79,57 +79,8 @@ uv run main.py
 uv run main.py --batch-size 128 --epochs 20 --lr 0.01
 ```
 
-## APIドキュメント
 
-### トレーニングAPI
-
-トレーニングモジュールには、モデルのトレーニングと評価関数が含まれています。
-
-#### モデルのトレーニング
-
-```python
-from src.models import Net
-from src.data import get_data_loaders
-from src.training.trainer import train_model
-import torch
-import argparse
-
-# モデルの作成
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = Net().to(device)
-
-# データのロード
-train_loader, test_loader = get_data_loaders(batch_size=64, test_batch_size=1000)
-
-# 引数の設定
-args = argparse.Namespace(
-    lr=1.0,
-    gamma=0.7,
-    epochs=14,
-    log_interval=10,
-    dry_run=False,
-    save_model=True
-)
-
-# モデルをトレーニング
-trained_model = train_model(model, device, train_loader, test_loader, args)
-```
-
-#### 個別のトレーニング・テスト関数
-
-より詳細に制御するには、個別のトレーニング関数とテスト関数を使用できます:
-
-```python
-from src.training import train, test
-
-# 1エポックのトレーニング
-train(args, model, device, train_loader, optimizer, epoch)
-
-# モデルの評価
-accuracy = test(model, device, test_loader)
-```
-
-### 推論API
+### 推論
 
 推論モジュールは、訓練済みモデルを使って予測を行うための関数を提供します。
 
@@ -154,25 +105,6 @@ predicted_digit, probabilities = predict_digit(model, image_path)
 
 print(f"予測された数字: {predicted_digit}")
 print(f"信頼度: {probabilities[predicted_digit]:.2f}")
-
-# PIL画像を直接使用
-image = Image.open("path/to/digit_image.png")
-predicted_digit, probabilities = predict_digit(model, image)
-
-# numpy配列を使用
-import numpy as np
-image_array = np.array(Image.open("path/to/digit_image.png").convert("L"))
-predicted_digit, probabilities = predict_digit(model, image_array)
-
-# PyTorchテンソルを使用
-import torch
-from torchvision import transforms
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.1307,), (0.3081,))
-])
-image_tensor = transform(Image.open("path/to/digit_image.png").convert("L"))
-predicted_digit, probabilities = predict_digit(model, image_tensor)
 ```
 
 ## モデルアーキテクチャ

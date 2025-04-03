@@ -1,16 +1,11 @@
-"""MNIST digit classification using PyTorch.
-
-This is the main entry point for training and evaluating a CNN model on the MNIST dataset.
-"""
-
 import argparse
 
 import torch
 
 from src.data import get_data_loaders
 from src.models import Net
-from src.training import test, train
 from src.training.trainer import train_model
+from src.visualization import plot_losses
 
 
 def main() -> None:
@@ -38,6 +33,14 @@ def main() -> None:
         help="how many batches to wait before logging training status",
     )
     parser.add_argument("--save-model", action="store_true", default=True, help="For Saving the current Model")
+    parser.add_argument("--plot-losses", action="store_true", default=True, help="Plot training and evaluation losses")
+    parser.add_argument(
+        "--save-plot", action="store_true", default=True, help="Save the loss plot to a file"
+    )
+    parser.add_argument(
+        "--plot-path", type=str, default="works/loss_plot.png",
+        help="Path to save the loss plot (default: works/loss_plot.png)"
+    )
     args = parser.parse_args()
 
     # Set up device
@@ -66,7 +69,12 @@ def main() -> None:
     model = Net().to(device)
 
     # Train and evaluate model
-    train_model(model, device, train_loader, test_loader, args)
+    model, train_losses, eval_losses = train_model(model, device, train_loader, test_loader, args)
+
+    # Plot losses if requested
+    if args.plot_losses:
+        save_path = args.plot_path if args.save_plot else None
+        plot_losses(train_losses, eval_losses, save_path=save_path)
 
 
 if __name__ == "__main__":

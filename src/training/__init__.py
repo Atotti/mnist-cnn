@@ -1,5 +1,5 @@
 """Training utilities for MNIST model."""
 
-from src.training.trainer import test, train
+from src.training.trainer import test, train, train_model
 
-__all__ = ["test", "train"]
+__all__ = ["test", "train", "train_model"]
