@@ -31,7 +31,7 @@ def get_data_loaders(
         test_kwargs.update(cuda_kwargs)
 
     # Define data transformations
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))])
 
     # Load datasets
     train_dataset = datasets.CIFAR10(data_dir, train=True, download=True, transform=transform)

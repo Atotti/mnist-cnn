@@ -58,7 +58,7 @@ def predict_digit(
         ValueError: If the image format is not supported
     """
     # Convert the input to a PyTorch tensor
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))])
 
     if isinstance(image, str):
         # Load image from file path
