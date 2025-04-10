@@ -1,9 +1,10 @@
 import argparse
 
 import torch
+import torchvision
 
 from src.data import get_data_loaders
-from src.models import Net
+# from src.models import Net
 from src.training.trainer import train_model
 from src.visualization import plot_accurency, plot_losses
 
@@ -18,7 +19,7 @@ def main() -> None:
     parser.add_argument(
         "--test-batch-size", type=int, default=1000, metavar="N", help="input batch size for testing (default: 1000)"
     )
-    parser.add_argument("--epochs", type=int, default=16, metavar="N", help="number of epochs to train (default: 14)")
+    parser.add_argument("--epochs", type=int, default=14, metavar="N", help="number of epochs to train (default: 14)")
     parser.add_argument("--lr", type=float, default=1.0, metavar="LR", help="learning rate (default: 1.0)")
     parser.add_argument("--gamma", type=float, default=0.7, metavar="M", help="Learning rate step gamma (default: 0.7)")
     parser.add_argument("--no-cuda", action="store_true", default=False, help="disables CUDA training")
@@ -66,7 +67,13 @@ def main() -> None:
     )
 
     # Create model
-    model = Net().to(device)
+    model = torchvision.models.resnet50(weights=)
+    model.fc = torch.nn.Sequential(
+        torch.nn.Linear(model.fc.in_features, 10),
+        torch.nn.LogSoftmax(dim=1)
+    )
+    model = model.to(device)
+
 
     # Train and evaluate model
     model, train_losses, eval_losses, eval_accurency = train_model(model, device, train_loader, test_loader, args)

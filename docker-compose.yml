@@ -1,0 +1,15 @@
+services:
+  app:
+    image: ayu_base_image:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/nfs/
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

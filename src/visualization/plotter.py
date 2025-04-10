@@ -32,6 +32,7 @@ def plot_losses(
     plt.title("Training and Evaluation Losses")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
+    plt.yscale("log")
     plt.legend()
     plt.grid(True, linestyle="--", alpha=0.7)
 
@@ -69,9 +70,9 @@ def plot_accurency(
     plt.figure(figsize=(10, 6))
     epochs = range(1, len(eval_accurency) + 1)
 
-    plt.plot(epochs, eval_accurency, "r-", label="Evaluation Loss")
+    plt.plot(epochs, eval_accurency, "r-", label="Evaluation Accurency")
 
-    plt.title("Training and Evaluation Losses")
+    plt.title("Training and Evaluation Accurency")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()

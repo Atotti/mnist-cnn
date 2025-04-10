@@ -1,6 +1,0 @@
-services:
-  app:
-    image: ayu_base_image:latest
-    build:
-      context: .
-      dockerfile: ./Dockerfile

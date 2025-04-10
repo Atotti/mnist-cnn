@@ -5,7 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "ipykernel>=6.29.5",
     "matplotlib>=3.10.1",
     "torch>=2.6.0",
     "torchvision>=0.21.0",
@@ -17,17 +16,7 @@ dev = [
     "ruff>=0.11.0",
 ]
 
-[project.optional-dependencies]
-build = ["torch", "setuptools", "packaging"]
-compile = ["flash-attn"]
 
-[tool.uv]
-no-build-isolation-package = ["flash-attn"]
-
-[[tool.uv.dependency-metadata]]
-name = "flash-attn"
-version = "2.6.3"
-requires-dist = ["torch", "einops"]
 
 [tool.ruff]
 line-length = 120
