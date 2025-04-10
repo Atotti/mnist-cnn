@@ -23,7 +23,8 @@ RUN apt-get -y update && apt-get -y upgrade && \
             libsqlite3-dev \
             liblzma-dev \
             libffi-dev \
-            curl
+            curl \
+            gh
 
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
 RUN sh /uv-installer.sh && rm /uv-installer.sh

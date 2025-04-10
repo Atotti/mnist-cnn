@@ -8,7 +8,7 @@ from torchvision import datasets, transforms
 def get_data_loaders(
     batch_size: int = 64,
     test_batch_size: int = 1000,
-    use_cuda: bool = False,
+    use_cuda: bool = True,
     data_dir: str = "data",
 ) -> tuple[DataLoader, DataLoader]:
     """Create train and test data loaders for MNIST dataset.
@@ -34,8 +34,8 @@ def get_data_loaders(
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
 
     # Load datasets
-    train_dataset = datasets.MNIST(data_dir, train=True, download=True, transform=transform)
-    test_dataset = datasets.MNIST(data_dir, train=False, transform=transform)
+    train_dataset = datasets.CIFAR10(data_dir, train=True, download=True, transform=transform)
+    test_dataset = datasets.CIFAR10(data_dir, train=False, transform=transform)
 
     # Create data loaders
     train_loader = DataLoader(train_dataset, **train_kwargs)

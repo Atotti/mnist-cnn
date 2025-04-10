@@ -1,6 +1,6 @@
 services:
   app:
-    platform: linux/x86_64
+    image: ayu_base_image:latest
     build:
       context: .
       dockerfile: ./Dockerfile

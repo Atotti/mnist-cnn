@@ -17,18 +17,18 @@ class Net(nn.Module):
     def __init__(self) -> None:
         """Initialize the CNN model architecture."""
         super().__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3, 1)
+        self.conv1 = nn.Conv2d(3, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(9216, 128)
+        self.fc1 = nn.Linear(12544, 128)
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x: Any) -> torch.Tensor:  # noqa: ANN401
         """Forward pass through the network.
 
         Args:
-            x: Input tensor containing MNIST images (batch_size, 1, 28, 28)
+            x: Input tensor containing CIFAR10 images (batch_size, 3, 32, 32)
 
         Returns:
             Log probabilities for each digit class (0-9)
