@@ -67,7 +67,7 @@ def main() -> None:
     )
 
     # Create model
-    model = torchvision.models.resnet34()
+    model = torchvision.models.resnet18()
     model.fc = torch.nn.Sequential(
         torch.nn.Linear(model.fc.in_features, 10),
         torch.nn.LogSoftmax(dim=1)
