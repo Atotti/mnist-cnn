@@ -32,7 +32,6 @@ def plot_losses(
     plt.title("Training and Evaluation Losses")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
-    plt.yscale("log")
     plt.legend()
     plt.grid(True, linestyle="--", alpha=0.7)
 
