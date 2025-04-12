@@ -67,7 +67,7 @@ def main() -> None:
     )
 
     # Create model
-    model = torchvision.models.resnet18()
+    model = torchvision.models.resnet34()
     model.conv1 = torch.nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
     model.fc = torch.nn.Sequential(
         torch.nn.Linear(model.fc.in_features, 10),
