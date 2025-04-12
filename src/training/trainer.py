@@ -114,8 +114,9 @@ def train_model(
     Returns:
         Tuple containing (trained model, training losses, evaluation losses, eval accurency)
     """
-    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
-    scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=0.0001)
+    n_iterations = len(train_loader) * args.epochs
+    scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, n_iterations)
 
     train_losses = []
     eval_losses = []
