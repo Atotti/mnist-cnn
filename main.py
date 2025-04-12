@@ -68,6 +68,7 @@ def main() -> None:
 
     # Create model
     model = torchvision.models.resnet18()
+    model.conv1 = torch.nn.Conv2d(3, model.inplanes, kernel_size=3, stride=2, padding=3, bias=False)
     model.fc = torch.nn.Sequential(
         torch.nn.Linear(model.fc.in_features, 10),
         torch.nn.LogSoftmax(dim=1)
