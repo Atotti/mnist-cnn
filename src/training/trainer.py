@@ -116,7 +116,7 @@ def train_model(
     """
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=0.0001)
     n_iterations = len(train_loader) * args.epochs
-    scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, n_iterations)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, n_iterations)
 
     train_losses = []
     eval_losses = []
