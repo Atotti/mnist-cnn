@@ -14,7 +14,7 @@ def train(
     train_loader: DataLoader,
     optimizer: torch.optim.Optimizer,
     epoch: int,
-) -> float:
+) -> tuple[float, float]:
     """Train the model for one epoch.
 
     Args:
@@ -28,6 +28,8 @@ def train(
     model.train()
     total_loss = 0
     num_batches = 0
+    correct = 0
+    total = 0
 
     for batch_idx, (data, target) in enumerate(train_loader):
         device_data, device_target = data.to(device), target.to(device)
@@ -36,6 +38,11 @@ def train(
         loss = func.nll_loss(output, device_target)
         loss.backward()
         optimizer.step()
+
+        # Calculate accuracy
+        pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+        correct += pred.eq(device_target.view_as(pred)).sum().item()
+        total += len(device_data)
 
         total_loss += loss.item()
         num_batches += 1
@@ -48,11 +55,12 @@ def train(
             if args.dry_run:
                 break
 
-    # Calculate average loss for the epoch
+    # Calculate average loss and accuracy for the epoch
     avg_loss = total_loss / num_batches
-    print(f"Train Epoch: {epoch} Average Loss: {avg_loss:.6f}")
+    train_accuracy = 100.0 * correct / total
+    print(f"Train Epoch: {epoch} Average Loss: {avg_loss:.6f}, Accuracy: {correct}/{total} ({train_accuracy:.1f}%)")
 
-    return avg_loss
+    return avg_loss, train_accuracy
 
 
 def test(model: nn.Module, device: torch.device, test_loader: DataLoader) -> tuple[float, float]:
@@ -112,16 +120,18 @@ def train_model(
     train_losses = []
     eval_losses = []
     eval_accurencyes = []
+    train_accurencyes = []
 
     for epoch in range(1, args.epochs + 1):
         # Train and get average loss for the epoch
-        train_loss = train(args, model, device, train_loader, optimizer, epoch)
+        train_loss, train_accuracy = train(args, model, device, train_loader, optimizer, epoch)
         train_losses.append(train_loss)
 
         # Test and get test loss and accuracy
         eval_loss, accuracy = test(model, device, test_loader)
         eval_losses.append(eval_loss)
         eval_accurencyes.append(accuracy)
+        train_accurencyes.append(train_accuracy)
 
         scheduler.step()
 
@@ -129,4 +139,4 @@ def train_model(
         torch.save(model.state_dict(), "mnist_cnn.pt")
         print("Saved model to mnist_cnn.pt")
 
-    return model, train_losses, eval_losses, eval_accurencyes
+    return model, train_losses, eval_losses, eval_accurencyes, train_accurencyes

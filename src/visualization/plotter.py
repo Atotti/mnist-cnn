@@ -63,19 +63,20 @@ def plot_losses(
 
 def plot_accurency(
     eval_accurency: list[float],
+    train_accurency: list[float],
     save_path: str | None = None,
-    show_plot: bool = True,
-):
+) -> None:
     plt.figure(figsize=(10, 6))
     epochs = range(1, len(eval_accurency) + 1)
 
     plt.plot(epochs, eval_accurency, "r-", label="Evaluation Accurency")
+    plt.plot(epochs, train_accurency, "b-", label="Train Accurency")
 
     plt.title("Training and Evaluation Accurency")
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()
-    plt.grid(True, linestyle="--", alpha=0.7)
+    plt.grid(visible=True, linestyle="--", alpha=0.7)
 
 
     plt.tight_layout()

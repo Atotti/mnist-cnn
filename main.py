@@ -67,7 +67,7 @@ def main() -> None:
     )
 
     # Create model
-    model = torchvision.models.resnet18(pretrained=True)
+    model = torchvision.models.resnet18()
     model.fc = torch.nn.Sequential(
         torch.nn.Linear(model.fc.in_features, 10),
         torch.nn.LogSoftmax(dim=1)
@@ -76,13 +76,13 @@ def main() -> None:
 
 
     # Train and evaluate model
-    model, train_losses, eval_losses, eval_accurency = train_model(model, device, train_loader, test_loader, args)
+    model, train_losses, eval_losses, eval_accurency, train_accurency = train_model(model, device, train_loader, test_loader, args)
 
     # Plot losses if requested
     if args.plot_losses:
         save_path = args.plot_path if args.save_plot else None
         plot_losses(train_losses, eval_losses, save_path=save_path)
-        plot_accurency(eval_accurency, save_path=save_path.replace(".", "_acurrency."))
+        plot_accurency(eval_accurency, train_accurency, save_path=save_path.replace(".", "_acurrency."))
 
 
 if __name__ == "__main__":
