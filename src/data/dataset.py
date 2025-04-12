@@ -22,22 +22,48 @@ def get_data_loaders(
     Returns:
         A tuple containing (train_loader, test_loader)
     """
-    train_kwargs = {"batch_size": batch_size}
-    test_kwargs = {"batch_size": test_batch_size}
+    train_transform = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=(0.4914, 0.4822, 0.4465),
+            std=(0.247, 0.243, 0.261),
+        ),
+    ])
+
+    test_transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=(0.4914, 0.4822, 0.4465),
+            std=(0.247, 0.243, 0.261),
+        ),
+    ])
+
+    # --- DataLoader 用の共通パラメータ ---
+    train_kwargs = {"batch_size": batch_size, "shuffle": True}
+    test_kwargs = {"batch_size": test_batch_size, "shuffle": False}
 
     if use_cuda:
-        cuda_kwargs = {"num_workers": 1, "pin_memory": True, "shuffle": True}
+        cuda_kwargs = {"num_workers": 2, "pin_memory": True}
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    # Define data transformations
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))])
+    # --- Dataset の作成 ---
+    train_dataset = datasets.CIFAR10(
+        root=data_dir,
+        train=True,
+        download=True,
+        transform=train_transform,  # データ拡張込みの transform
+    )
+    test_dataset = datasets.CIFAR10(
+        root=data_dir,
+        train=False,
+        download=True,
+        transform=test_transform,   # ランダム操作なし
+    )
 
-    # Load datasets
-    train_dataset = datasets.CIFAR10(data_dir, train=True, download=True, transform=transform)
-    test_dataset = datasets.CIFAR10(data_dir, train=False, transform=transform)
-
-    # Create data loaders
+    # --- DataLoader の作成 ---
     train_loader = DataLoader(train_dataset, **train_kwargs)
     test_loader = DataLoader(test_dataset, **test_kwargs)
 
